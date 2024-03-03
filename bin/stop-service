@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+systemctl --quiet disable --now dokku-mdns@$1.service
