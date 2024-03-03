@@ -34,14 +34,14 @@ trigger-mdns-install() {
   if [[ $(systemctl 2>/dev/null) =~ -\.mount ]]; then
     cat <<EOF >/etc/systemd/system/dokku-mdns@.service
 [Unit]
-Description=Dokku MDNS service for %I
+Description=Dokku MDNS service for %i
 Requires=avahi-daemon.socket
 After=network.target avahi-daemon.service
 
 [Service]
 Type=simple
 User=dokku
-ExecStart=$SCRIPT_PATH %I
+ExecStart=$SCRIPT_PATH %i
 
 [Install]
 WantedBy=docker.service
