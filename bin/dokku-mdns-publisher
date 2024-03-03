@@ -7,7 +7,7 @@ dokku-mdns-publisher() {
   IP=$(ip -br -o a show $INTERFACE | (read interface status ip ip6; echo ${ip%/*}))
 
   APP_DOMAINS="$(dokku domains:report $APP --domains-app-vhosts)"
-  if [[ $APP_DOMAINS =~ ([^,\s]*\.local) ]]; then
+  if [[ $APP_DOMAINS =~ ([^, ]*\.local) ]]; then
     APP_DOMAIN=${BASH_REMATCH[1]}
   else
     echo "no local mdns domain found"
