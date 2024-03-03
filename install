@@ -16,17 +16,18 @@ trigger-mdns-install() {
 
   dokku_log_info1 "Setting up mdns ($DOKKU_DISTRO)"
 
+  SCRIPT_BASE_PATH="$PLUGIN_AVAILABLE_PATH/mdns/bin"
+  SCRIPT_PATH="$SCRIPT_BASE_PATH/dokku-mdns-publisher"
+  SUDOERS_FILE="/etc/sudoers.d/dokku-mdns"
+
   case "$DOKKU_DISTRO" in
     debian | raspbian | ubuntu)
+      echo "%dokku ALL=(ALL) NOPASSWD:$SCRIPT_BASE_PATH/start-service, $SCRIPT_BASE_PATH/stop-service, $SCRIPT_BASE_PATH/restart-service" >"$SUDOERS_FILE"
       if command -v avahi-utils &>/dev/null; then
         return
       fi
 
       avahi_install
-      ;;
-
-    arch)
-      pacman -S --noconfirm --noprogressbar --needed avahi
       ;;
   esac
 
