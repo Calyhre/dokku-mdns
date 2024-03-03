@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+
+trigger-mdns-post-delete() {
+  declare desc="deletes an app mdns domain"
+  declare trigger="post-delete"
+  declare APP="$1"
+
+  if command -v systemctl &>/dev/null; then
+    systemctl --quiet disable --now dokku-mdns@$APP.service
+  fi
+}
+
+trigger-mdns-post-delete "$@"

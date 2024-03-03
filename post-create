@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+
+trigger-mdns-post-create() {
+  declare desc="initializes an app mdns domain"
+  declare trigger="post-create"
+  declare APP="$1"
+
+  if command -v systemctl &>/dev/null; then
+    systemctl --quiet reenable --now dokku-mdns@$APP.service
+  fi
+}
+
+trigger-mdns-post-create "$@"

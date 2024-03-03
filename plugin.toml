@@ -1,0 +1,4 @@
+[plugin]
+description = "Auto advertise MDNS domains"
+version = "0.1.0"
+[plugin.config]

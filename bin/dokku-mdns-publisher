@@ -1,0 +1,20 @@
+#!/bin/bash
+
+dokku-mdns-publisher() {
+  declare APP="$1"
+
+  INTERFACE=$(route | grep '^default' | grep -o '[^ ]*$')
+  IP=$(ip -br -o a show $INTERFACE | (read interface status ip ip6; echo ${ip%/*}))
+
+  APP_DOMAINS="$(dokku domains:report $APP --domains-app-vhosts)"
+  if [[ $APP_DOMAINS =~ ([^,\s]*\.local) ]]; then
+    APP_DOMAIN=${BASH_REMATCH[1]}
+  else
+    echo "no local mdns domain found"
+    return 0
+  fi
+
+  /usr/bin/avahi-publish -a $APP_DOMAIN -R $IP
+}
+
+dokku-mdns-publisher "$@"

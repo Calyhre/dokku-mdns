@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+[[ $DOKKU_TRACE ]] && set -x
+source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
+
+avahi_install() {
+  declare desc="install avahi-utils"
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update && apt-get -qq -y --no-install-recommends install avahi-utils
+}
+
+trigger-mdns-install() {
+  declare desc="mdns install trigger"
+  declare trigger="install"
+
+  dokku_log_info1 "Setting up mdns ($DOKKU_DISTRO)"
+
+  case "$DOKKU_DISTRO" in
+    debian | raspbian | ubuntu)
+      if command -v avahi-utils &>/dev/null; then
+        return
+      fi
+
+      avahi_install
+      ;;
+
+    arch)
+      pacman -S --noconfirm --noprogressbar --needed avahi
+      ;;
+  esac
+
+  if [[ $(systemctl 2>/dev/null) =~ -\.mount ]]; then
+    cat <<EOF >/etc/systemd/system/dokku-mdns@.service
+[Unit]
+Description=Dokku MDNS service for %I
+Requires=avahi-daemon.socket
+After=network.target avahi-daemon.service
+
+[Service]
+Type=simple
+User=dokku
+ExecStart=$SCRIPT_PATH %I
+
+[Install]
+WantedBy=docker.service
+EOF
+  fi
+}
+
+trigger-mdns-install "$@"
