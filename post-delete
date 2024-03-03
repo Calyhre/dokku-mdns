@@ -9,8 +9,10 @@ trigger-mdns-post-delete() {
   declare trigger="post-delete"
   declare APP="$1"
 
+  SCRIPT_PATH="$PLUGIN_AVAILABLE_PATH/mdns/bin/stop-service"
+
   if command -v systemctl &>/dev/null; then
-    systemctl --quiet disable --now dokku-mdns@$APP.service
+    sudo "$SCRIPT_PATH" "$APP"
   fi
 }
 

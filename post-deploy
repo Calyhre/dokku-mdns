@@ -9,8 +9,10 @@ trigger-mdns-post-create() {
   declare trigger="post-deploy"
   declare APP="$1"
 
+  SCRIPT_PATH="$PLUGIN_AVAILABLE_PATH/mdns/bin/restart-service"
+
   if command -v systemctl &>/dev/null; then
-    systemctl --quiet restart --now dokku-mdns@$APP.service
+    sudo "$SCRIPT_PATH" "$APP"
   fi
 }
 
